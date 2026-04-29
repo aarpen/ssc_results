@@ -1,1 +1,405 @@
-hi
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSC Results 2026 — FIITJEE Madhapur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0f0e0c;
+    --paper: #f5f2eb;
+    --accent: #d4400a;
+    --accent2: #1a3a8f;
+    --rule: #0f0e0c;
+    --muted: #5a5650;
+    --surface: #ede9e0;
+    --gold: #b8860b;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 6px solid var(--ink);
+    padding: 0;
+    position: relative;
+  }
+
+  .header-top {
+    background: var(--ink);
+    color: var(--paper);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 2rem;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+  }
+
+  .headline-block {
+    padding: 2rem 2rem 1.5rem;
+  }
+
+  .edition-tag {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    line-height: 0.9;
+    color: var(--ink);
+  }
+
+  h1 em { color: var(--accent); font-style: normal; }
+
+  .subheadline {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-top: 0.75rem;
+    border-top: 2px solid var(--accent2);
+    padding-top: 0.5rem;
+    display: inline-block;
+  }
+
+  .stats-strip {
+    border-top: 2px solid var(--ink);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stat-cell {
+    padding: 1rem 1.5rem;
+    border-right: 2px solid var(--ink);
+  }
+
+  .stat-cell:last-child { border-right: none; }
+  .stat-cell .num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .stat-cell .lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    border-bottom: 3px solid var(--ink);
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    background: var(--surface);
+    flex-wrap: wrap;
+  }
+
+  .controls input {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    padding: 8px 12px;
+    font-family: 'DM Mono', monospace;
+    flex-grow: 1;
+    max-width: 400px;
+  }
+
+  /* ── RESULTS ── */
+  main { padding: 0 2rem 4rem; }
+
+  #results-count {
+    font-size: 11px;
+    color: var(--muted);
+    padding: 1rem 0;
+    text-transform: uppercase;
+  }
+
+  .student-card {
+    border-bottom: 2px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    background: var(--paper);
+    cursor: pointer;
+  }
+
+  .main-col { padding: 1.25rem; }
+  .student-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; }
+  .roll-num { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+  .subject-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .pill { font-size: 10px; padding: 2px 6px; border: 1px solid var(--ink); }
+
+  .score-col {
+    border-left: 2px solid var(--ink);
+    padding: 1rem;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .big-score { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; }
+  .pct-badge { font-size: 12px; padding: 2px 6px; background: var(--ink); color: var(--paper); }
+
+  /* ── DETAIL PANEL ── */
+  .detail-panel {
+    display: none;
+    grid-column: 1 / -1;
+    padding: 1.5rem;
+    background: var(--surface);
+    border-top: 1px dashed var(--ink);
+  }
+  .detail-panel.open { display: block; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+  }
+
+  .subject-block { background: var(--paper); padding: 0.75rem; border: 1px solid var(--ink); }
+  .subject-block .subj-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
+  .subject-block .subj-score { font-weight: bold; font-size: 1.2rem; margin-top: 4px; }
+  .subject-block .subj-detail { font-size: 9px; color: var(--muted); margin-top: 4px; }
+  .bar-wrap { height: 4px; background: #ccc; margin-top: 8px; }
+  .bar-fill { height: 100%; background: var(--accent2); }
+
+  /* ── MOBILE OVERRIDES ── */
+  @media (max-width: 768px) {
+    .stats-strip { grid-template-columns: repeat(3, 1fr); }
+    .detail-grid { grid-template-columns: repeat(3, 1fr); }
+    .header-top { flex-direction: column; text-align: center; gap: 5px; }
+  }
+
+  @media (max-width: 500px) {
+    .student-card { grid-template-columns: 1fr; }
+    .score-col {
+      border-left: none;
+      border-top: 1px solid var(--ink);
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1.25rem;
+    }
+    .big-score { font-size: 1.8rem; }
+    .detail-grid { grid-template-columns: repeat(2, 1fr); }
+    main { padding: 0 1rem 4rem; }
+    .controls { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <span>FIITJEE MADHAPUR</span>
+    <span>BOARD RESULTS 2026</span>
+  </div>
+  <div class="headline-block">
+    <span class="edition-tag">SSC Class X</span>
+    <h1>RESULTS <em>2026</em></h1>
+    <div class="subheadline">FIITJEE Madhapur</div>
+  </div>
+  <div class="stats-strip">
+    <div class="stat-cell"><div class="num" id="stat-total">0</div><div class="lbl">Students</div></div>
+    <div class="stat-cell"><div class="num" id="stat-pass">0</div><div class="lbl">Passed</div></div>
+    <div class="stat-cell"><div class="num" id="stat-avg">0%</div><div class="lbl">Avg %</div></div>
+  </div>
+</header>
+
+<div class="controls">
+  <input type="text" id="search-input" placeholder="Search by name...">
+</div>
+
+<main>
+  <div id="results-count"></div>
+  <div id="cards-container"></div>
+</main>
+
+<script>
+const SUBJECT_LABELS = {
+  'Language I marks':    'L1',
+  'Language II marks':   'L2',
+  'Language III marks':  'L3',
+  'Mathematics marks':   'Math',
+  'Science marks':       'Sci',
+  'Social Studies marks':'Soc'
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REPLACE THE OBJECT BELOW WITH YOUR ACTUAL JSON DATA WHEN READY
+// The keys can be anything (e.g. "1", "2", …); only the values are used.
+// Each student object must have: name, roll_number, overall_score,
+// overall_percentage, Subjects (with internal_marks / external_marks /
+// total_marks per subject), and final_result.
+// ─────────────────────────────────────────────────────────────────────────────
+const DATA = {
+  
+  
+  "1": {
+    "name": "SIDDHARTH NEMANI",
+    "roll_number": "2523156648",
+    "overall_score": 593,
+    "overall_percentage": 98.83,
+    "Subjects": {
+      "Language I marks": {
+        "internal_marks": "20",
+        "external_marks": "79",
+        "total_marks": "99"
+      },
+      "Language II marks": {
+        "internal_marks": "20",
+        "external_marks": "77",
+        "total_marks": "97"
+      },
+      "Language III marks": {
+        "internal_marks": "20",
+        "external_marks": "78",
+        "total_marks": "98"
+      },
+      "Mathematics marks": {
+        "internal_marks": "20",
+        "external_marks": "79",
+        "total_marks": "99"
+      },
+      "Science marks": {
+        "internal_marks": "20",
+        "external_marks": "80",
+        "total_marks": "100"
+      },
+      "Social Studies marks": {
+        "internal_marks": "20",
+        "external_marks": "80",
+        "total_marks": "100"
+      }
+    },
+    "final_result": "PASS"
+  },
+  "2": {
+    "name": "SHAIK SHOAIB",
+    "roll_number": "2523156649",
+    "overall_score": 531,
+    "overall_percentage": 88.5,
+    "Subjects": {
+      "Language I marks": {
+        "internal_marks": "18",
+        "external_marks": "64",
+        "total_marks": "82"
+      },
+      "Language II marks": {
+        "internal_marks": "17",
+        "external_marks": "67",
+        "total_marks": "84"
+      },
+      "Language III marks": {
+        "internal_marks": "17",
+        "external_marks": "70",
+        "total_marks": "87"
+      },
+      "Mathematics marks": {
+        "internal_marks": "18",
+        "external_marks": "74",
+        "total_marks": "92"
+      },
+      "Science marks": {
+        "internal_marks": "17",
+        "external_marks": "72",
+        "total_marks": "89"
+      },
+      "Social Studies marks": {
+        "internal_marks": "17",
+        "external_marks": "80",
+        "total_marks": "97"
+      }
+    },
+    "final_result": "PASS"
+  }
+
+
+};
+// ─────────────────────────────────────────────────────────────────────────────
+// END OF DATA — do not edit below this line unless needed
+// ─────────────────────────────────────────────────────────────────────────────
+
+let expandedId = null;
+
+function render() {
+  const container = document.getElementById('cards-container');
+  const search = document.getElementById('search-input').value.toLowerCase();
+
+  // Always sort alphabetically by name
+  const students = Object.values(DATA).sort((a, b) => a.name.localeCompare(b.name));
+
+  const filtered = students.filter(s => s.name.toLowerCase().includes(search));
+
+  // Stats
+  document.getElementById('stat-total').innerText = students.length;
+  document.getElementById('stat-pass').innerText  = students.filter(s => s.final_result === 'PASS').length;
+  const avg = students.reduce((a, b) => a + b.overall_percentage, 0) / students.length;
+  document.getElementById('stat-avg').innerText   = avg.toFixed(1) + '%';
+
+  document.getElementById('results-count').innerText =
+    `Showing ${filtered.length} of ${students.length} students — alphabetical order`;
+
+  container.innerHTML = filtered.map(s => `
+    <div class="student-card" onclick="toggle('${s.roll_number}')">
+      <div class="main-col">
+        <div class="student-name">${s.name}</div>
+        <div class="roll-num">Roll No: ${s.roll_number}</div>
+        <div class="subject-pills">
+          ${Object.keys(s.Subjects).map(k =>
+            `<span class="pill">${SUBJECT_LABELS[k]}: ${s.Subjects[k].total_marks}</span>`
+          ).join('')}
+        </div>
+      </div>
+      <div class="score-col">
+        <div class="big-score">${s.overall_score}</div>
+        <div class="pct-badge">${s.overall_percentage}%</div>
+      </div>
+      <div class="detail-panel ${expandedId === s.roll_number ? 'open' : ''}">
+        <div class="detail-grid">
+          ${Object.keys(s.Subjects).map(k => `
+            <div class="subject-block">
+              <div class="subj-label">${SUBJECT_LABELS[k]}</div>
+              <div class="subj-score">${s.Subjects[k].total_marks}</div>
+              <div class="subj-detail">Int: ${s.Subjects[k].internal_marks} · Ext: ${s.Subjects[k].external_marks}</div>
+              <div class="bar-wrap"><div class="bar-fill" style="width:${s.Subjects[k].total_marks}%"></div></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggle(id) {
+  expandedId = (expandedId === id) ? null : id;
+  render();
+}
+
+document.getElementById('search-input').addEventListener('input', render);
+
+render();
+</script>
+</body>
+</html>
